@@ -1,8 +1,12 @@
 /*
- * Ukraine Conflict Monitor v4
- * Tabs: Overview | Analytics | SRA Matrix | Triggers | Executive | Incident Log
- * Features: 4 scoring methods, front-line oblast overrides, Type A+D triggers with recs
+ * Ukraine Conflict Monitor v4 — Bridgital Impact Design
  */
+// Load Bridgital fonts
+if(typeof document!=="undefined"&&!document.getElementById("bridgital-fonts")){
+  const l=document.createElement("link");l.id="bridgital-fonts";l.rel="stylesheet";
+  l.href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap";
+  document.head.appendChild(l);
+}
 import { useState, useMemo, useCallback, useRef } from "react";
 import { AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Brush } from "recharts";
@@ -219,15 +223,15 @@ const NAT_DEMO=genNatD();
 const ALL_NATIONAL=[...BASE,...NAT_DEMO];
 
 
-const OC={"Sumy":"#ef4444","Kyiv City":"#3b82f6","Kyiv Oblast":"#10b981","Chernihiv":"#f59e0b"};
-const SC={CRITICAL:"#f43f5e",HIGH:"#fb923c",MEDIUM:"#fbbf24",LOW:"#64748b"};
+const OC={"Sumy":"#c0392b","Kyiv City":"#1A6B65","Kyiv Oblast":"#2A8F87","Chernihiv":"#C9A84C"};
+const SC={CRITICAL:"#c0392b",HIGH:"#d4621a",MEDIUM:"#b8860b",LOW:"#4A6361"};
 const IC={CRITICAL:"#f43f5e",RELEVANT:"#fb923c","NON-RELEVANT":"#475569"};
-const TC={WORSENED:"#f43f5e",IMPROVED:"#34d399",STABLE:"#64748b",SEASONAL:"#a78bfa"};
+const TC={WORSENED:"#c0392b",IMPROVED:"#2A8F87",STABLE:"#4A6361",SEASONAL:"#C9A84C"};
 const TI={WORSENED:"↑ WORSENED",IMPROVED:"↓ IMPROVED",STABLE:"→ STABLE",SEASONAL:"⟳ SEASONAL"};
 const MN=["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const fmy=(m,y)=>`${MN[m]} ${y}`;
 const PP=["#f43f5e","#fb923c","#fbbf24","#34d399","#60a5fa","#a78bfa","#f472b6","#94a3b8","#0ea5e9","#d946ef","#84cc16","#22d3ee","#475569"];
-const CC=c=>c>=13?"#f43f5e":c>=9?"#fb923c":c>=6?"#fbbf24":"#64748b";
+const CC=c=>c>=13?"#c0392b":c>=9?"#d4621a":c>=6?"#b8860b":"#4A6361";
 
 const METHODS=[
   {id:"official",label:"Official SRA only",desc:"Pure SRA score (L×I matrix). Incident data flags divergence only — no fusion. Recommended for official reporting and SRA reviews."},
@@ -337,12 +341,12 @@ function TopRiskChart({filt,rkC}){
     </div>
     <ResponsiveContainer width="100%" height={220}>
       <LineChart data={chartData} margin={{top:4,right:16,bottom:4,left:0}}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#0f1f3d"/>
-        <XAxis dataKey="lbl" tick={{fill:"#475569",fontSize:9}} interval={3}/>
-        <YAxis tick={{fill:"#475569",fontSize:9}} allowDecimals={false}/>
-        <Tooltip contentStyle={{background:"#0f1f3d",border:"1px solid #1e3a5f",fontSize:10,borderRadius:6}}
+        <CartesianGrid strokeDasharray="3 3" stroke="#1A6B6533"/>
+        <XAxis dataKey="lbl" tick={{fill:"#4A6361",fontSize:9}} interval={3}/>
+        <YAxis tick={{fill:"#4A6361",fontSize:9}} allowDecimals={false}/>
+        <Tooltip contentStyle={{background:"#124E49",border:"1px solid #1A6B65",fontSize:10,borderRadius:6}}
           formatter={(v,name)=>[`${v} incidents`,`${name} — ${SRA_DATA.find(r=>r.id===name)?.nom||name}`]}/>
-        <Brush dataKey="lbl" height={13} stroke="#1e293b" fill="#060d1a"/>
+        <Brush dataKey="lbl" height={13} stroke="#124E49" fill="#0d1e1d"/>
         {top6.map((id,i)=>(<Line key={id} type="monotone" dataKey={id} stroke={TCOLS[i]} strokeWidth={2} dot={false} connectNulls/>))}
       </LineChart>
     </ResponsiveContainer>
@@ -462,19 +466,29 @@ export default function App(){
   const addI=()=>{setData(p=>[...p,{...newI,id:`${newI.annee}-M${Date.now().toString().slice(-5)}`,risk_nom:SRA_DATA.find(r=>r.id===newI.risk_id)?.nom||newI.risk_id,humanitaires:false,enfants:false,statut:"VERIFIED"}]);setAddM(false);showT("Incident added");};
 
   // Style helpers
-  const S={
-    wrap:{fontFamily:"'DM Sans','Segoe UI',sans-serif",background:"#060d1a",minHeight:"100vh",color:"#e2e8f0"},
-    hdr:{background:"linear-gradient(135deg,#1e3a5f 0%,#0f2a4a 100%)",borderBottom:"1px solid #2d5a8f",padding:"0 22px",height:52,display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:60},
-    tabs:{background:"#0a1628",borderBottom:"1px solid #1e293b",padding:"0 22px",display:"flex",position:"sticky",top:86,zIndex:55,overflowX:"auto"},
-    tab:(a,w)=>({padding:"11px 18px",color:a?"#e2e8f0":w?"#fb923c":"#94a3b8",background:a?"#0f1f3d":"transparent",border:"none",borderBottom:a?"2px solid #f43f5e":"2px solid transparent",cursor:"pointer",fontSize:12,fontWeight:a?700:500,whiteSpace:"nowrap",fontFamily:"inherit",letterSpacing:"0.02em"}),
-    fbar:{background:"#0a1628",borderBottom:"1px solid #1e293b",padding:"8px 22px",position:"sticky",top:132,zIndex:50},
-    btn:(a,c)=>({padding:"4px 9px",background:a?c+"22":"transparent",border:`1px solid ${a?c:"#1e3a5f"}`,color:a?c:"#475569",borderRadius:4,cursor:"pointer",fontSize:10,fontFamily:"inherit",fontWeight:a?600:400}),
-    card:{background:"#0f1f3d",border:"1px solid #1e3a5f",borderRadius:8,padding:"13px 15px"},
-    sec:{background:"#0a1628",border:"1px solid #1e293b",borderRadius:8,padding:"16px"},
-    st:{color:"#475569",fontSize:9,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:10,fontWeight:600},
-    inp:{background:"#060d1a",border:"1px solid #1e3a5f",color:"#e2e8f0",borderRadius:4,padding:"5px 8px",fontSize:11,fontFamily:"inherit",width:"100%",boxSizing:"border-box"},
+  // ── BRIDGITAL BRAND PALETTE ──
+  const BR={
+    tealDark:"#124E49",teal:"#1A6B65",tealLight:"#2A8F87",tealPale:"#E8F4F3",
+    gold:"#C9A84C",charcoal:"#1C2B2A",mid:"#4A6361",white:"#FAFAF8",grey:"#F2F4F3",text:"#2C3E3D",
+    // Functional severity (kept for safety/ops readability)
+    critical:"#c0392b",high:"#d4621a",medium:"#b8860b",low:"#4A6361",
   };
-  const SBar=({v,max=16,c="#f43f5e",h=5})=>(<div style={{background:"#060d1a",borderRadius:2,height:h,flex:1,minWidth:30}}><div style={{background:c,width:`${Math.min(100,(v/max)*100)}%`,height:"100%",borderRadius:2}}/></div>);
+  const S={
+    wrap:{fontFamily:"'DM Sans','Segoe UI',sans-serif",background:BR.charcoal,minHeight:"100vh",color:BR.white},
+    hdr:{background:`linear-gradient(135deg,${BR.tealDark} 0%,#0d2e2b 100%)`,borderBottom:`1px solid ${BR.teal}44`,padding:"0 22px",height:56,display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:60},
+    tabs:{background:"#0f1e1d",borderBottom:`1px solid ${BR.teal}33`,padding:"0 22px",display:"flex",position:"sticky",top:90,zIndex:55,overflowX:"auto"},
+    tab:(a,w)=>({padding:"12px 20px",color:a?BR.white:w?BR.gold:`${BR.white}66`,background:"transparent",border:"none",borderBottom:a?`2px solid ${BR.gold}`:"2px solid transparent",cursor:"pointer",fontSize:12,fontWeight:a?600:400,whiteSpace:"nowrap",fontFamily:"'DM Sans',sans-serif",letterSpacing:"0.04em",textTransform:"uppercase"}),
+    fbar:{background:"#0f1e1d",borderBottom:`1px solid ${BR.teal}33`,padding:"8px 22px",position:"sticky",top:136,zIndex:50},
+    btn:(a,c)=>({padding:"4px 10px",background:a?c+"22":"transparent",border:`1px solid ${a?c:BR.teal+"44"}`,color:a?c:`${BR.white}55`,borderRadius:4,cursor:"pointer",fontSize:10,fontFamily:"'DM Sans',sans-serif",fontWeight:a?600:400,letterSpacing:"0.03em"}),
+    card:{background:BR.tealDark,border:`1px solid ${BR.teal}44`,borderRadius:8,padding:"13px 15px"},
+    sec:{background:"#0f1e1d",border:`1px solid ${BR.teal}33`,borderRadius:8,padding:"16px"},
+    st:{color:BR.gold,fontSize:9,letterSpacing:"0.16em",textTransform:"uppercase",marginBottom:10,fontWeight:700,fontFamily:"'DM Sans',sans-serif",display:"flex",alignItems:"center",gap:6},
+    inp:{background:BR.charcoal,border:`1px solid ${BR.teal}55`,color:BR.white,borderRadius:4,padding:"5px 8px",fontSize:11,fontFamily:"'DM Sans',sans-serif",width:"100%",boxSizing:"border-box"},
+  };
+  // Section title with gold line (Bridgital label pattern)
+  const SBar=({v,max=16,c=BR.critical,h=5})=>(<div style={{background:`${BR.teal}22`,borderRadius:2,height:h,flex:1,minWidth:30}}><div style={{background:c,width:`${Math.min(100,(v/max)*100)}%`,height:"100%",borderRadius:2}}/></div>);
+  // Severity colors using Bridgital-adapted palette
+  const CCb=c=>c>=13?BR.critical:c>=9?BR.high:c>=6?BR.medium:BR.low;
 
   const TDEF=[
     {id:"overview",ico:"◉",lbl:"Overview"},
@@ -487,15 +501,18 @@ export default function App(){
 
   return(<div style={S.wrap}>
     <div style={S.hdr}>
-      <div style={{display:"flex",alignItems:"center",gap:10}}>
-        <div style={{background:"#f43f5e",color:"#fff",fontWeight:900,fontSize:10,letterSpacing:"0.15em",padding:"3px 7px",borderRadius:3}}>UA</div>
-        <div><div style={{color:"#e2e8f0",fontSize:14,fontWeight:700}}>Ukraine Conflict Monitor</div><div style={{color:"#475569",fontSize:10}}>Humanitarian Security Tracking System · SRA {SRA_V}</div></div>
+      <div style={{display:"flex",alignItems:"center",gap:12}}>
+        <div style={{background:BR.gold,color:BR.charcoal,fontWeight:900,fontSize:10,letterSpacing:"0.15em",padding:"3px 8px",borderRadius:3,fontFamily:"'DM Sans',sans-serif"}}>BRIDGITAL</div>
+        <div>
+          <div style={{color:BR.white,fontSize:15,fontWeight:300,fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.04em"}}>Ukraine Conflict Monitor</div>
+          <div style={{color:`${BR.white}66`,fontSize:10,fontFamily:"'DM Sans',sans-serif",letterSpacing:"0.06em"}}>Humanitarian Security Tracking System · SRA {SRA_V}</div>
+        </div>
       </div>
-      <div style={{color:alerts.length>0?"#fb923c":"#475569",fontSize:10}}>{alerts.length>0?`⚑ ${alerts.length} active trigger${alerts.length>1?"s":""}  `:""}{data.length.toLocaleString()} records · <span style={{color:"#334155"}}>4 oblasts monitored</span></div>
+      <div style={{color:alerts.length>0?BR.gold:`${BR.white}44`,fontSize:10,fontFamily:"'DM Sans',sans-serif"}}>{alerts.length>0?`⚑ ${alerts.length} active trigger${alerts.length>1?"s":""}  `:""}{data.length.toLocaleString()} records · <span style={{color:`${BR.white}33`}}>4 oblasts monitored</span></div>
     </div>
 
     {/* NATIONAL KPI BANNER */}
-    <div style={{background:"#07111f",borderBottom:"1px solid #1e293b",padding:"5px 22px",display:"flex",gap:16,alignItems:"center",flexWrap:"wrap"}}>
+    <div style={{background:"#0d1e1d",borderBottom:"1px solid #1e293b",padding:"5px 22px",display:"flex",gap:16,alignItems:"center",flexWrap:"wrap"}}>
       <div style={{color:"#334155",fontSize:9,letterSpacing:"0.1em",fontWeight:600,flexShrink:0}}>🇺🇦 NATIONAL EST.</div>
       <div style={{display:"flex",gap:14,alignItems:"center",flexWrap:"wrap"}}>
         <span style={{color:"#64748b",fontSize:10}}>Total incidents: <span style={{color:"#e2e8f0",fontWeight:700}}>{natKpi.total.toLocaleString()}</span></span>
@@ -533,9 +550,9 @@ export default function App(){
         <div style={S.st}>Monthly Incident Timeline — by Oblast</div>
         <ResponsiveContainer width="100%" height={200}><AreaChart data={tl} margin={{top:2,right:14,bottom:2,left:0}}>
           <defs>{Object.entries(OC).map(([k,c])=>(<linearGradient key={k} id={`g${k.replace(/\s/g,"_")}`} x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={c} stopOpacity={0.5}/><stop offset="95%" stopColor={c} stopOpacity={0.02}/></linearGradient>))}</defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#0f1f3d"/><XAxis dataKey="lbl" tick={{fill:"#475569",fontSize:9}} interval={3}/><YAxis tick={{fill:"#475569",fontSize:9}}/><Tooltip contentStyle={{background:"#0f1f3d",border:"1px solid #1e3a5f",fontSize:10,borderRadius:6}}/><Legend wrapperStyle={{fontSize:10}}/>
+          <CartesianGrid strokeDasharray="3 3" stroke="#1A6B6533"/><XAxis dataKey="lbl" tick={{fill:"#4A6361",fontSize:9}} interval={3}/><YAxis tick={{fill:"#4A6361",fontSize:9}}/><Tooltip contentStyle={{background:"#124E49",border:"1px solid #1A6B65",fontSize:10,borderRadius:6}}/><Legend wrapperStyle={{fontSize:10}}/>
           {OBLS.map(o=>(<Area key={o} type="monotone" dataKey={o} stackId="1" stroke={OC[o]} fill={`url(#g${o.replace(/\s/g,"_")})`} strokeWidth={1.5}/>))}
-          <Brush dataKey="lbl" height={13} stroke="#1e293b" fill="#060d1a"/>
+          <Brush dataKey="lbl" height={13} stroke="#124E49" fill="#0d1e1d"/>
         </AreaChart></ResponsiveContainer>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
@@ -546,8 +563,8 @@ export default function App(){
               {rkC.slice(0,10).map(r=>(<div key={r.id} style={{height:24,display:"flex",alignItems:"center",gap:4}}><div style={{width:5,height:5,borderRadius:1,background:SC[r.ms],flexShrink:0}}/><span style={{fontSize:9,color:"#94a3b8",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{r.id} — {r.nom}</span></div>))}
             </div>
             <ResponsiveContainer width="100%" height={245}><BarChart data={rkC.slice(0,10)} layout="vertical" margin={{top:0,right:40,bottom:0,left:170}}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#0f1f3d" horizontal={false}/><XAxis type="number" tick={{fill:"#475569",fontSize:9}}/><YAxis dataKey="id" type="category" tick={false} width={0}/>
-              <Tooltip contentStyle={{background:"#0f1f3d",border:"1px solid #1e3a5f",fontSize:10}} formatter={(v,n,p)=>[`${v} (${p.payload.pct}%)`,p.payload.nom]}/>
+              <CartesianGrid strokeDasharray="3 3" stroke="#1A6B6533" horizontal={false}/><XAxis type="number" tick={{fill:"#4A6361",fontSize:9}}/><YAxis dataKey="id" type="category" tick={false} width={0}/>
+              <Tooltip contentStyle={{background:"#124E49",border:"1px solid #1A6B65",fontSize:10}} formatter={(v,n,p)=>[`${v} (${p.payload.pct}%)`,p.payload.nom]}/>
               <Bar dataKey="cnt" radius={[0,3,3,0]}>{rkC.slice(0,10).map((r,i)=>(<Cell key={i} fill={SC[r.ms]} fillOpacity={0.8}/>))}</Bar>
             </BarChart></ResponsiveContainer>
           </div>
@@ -556,7 +573,7 @@ export default function App(){
           <div style={S.st}>Target Categories</div>
           <ResponsiveContainer width="100%" height={245}><PieChart>
             <Pie data={cib} cx="40%" cy="50%" innerRadius={42} outerRadius={80} paddingAngle={2} dataKey="value">{cib.map((_,i)=>(<Cell key={i} fill={PP[i%PP.length]}/>))}</Pie>
-            <Tooltip contentStyle={{background:"#0f1f3d",border:"1px solid #1e3a5f",fontSize:10}} formatter={(v,n,p)=>[`${v} (${p.payload?.pct}%)`,p.payload?.full||n]}/>
+            <Tooltip contentStyle={{background:"#124E49",border:"1px solid #1A6B65",fontSize:10}} formatter={(v,n,p)=>[`${v} (${p.payload?.pct}%)`,p.payload?.full||n]}/>
             <Legend layout="vertical" align="right" verticalAlign="middle" wrapperStyle={{fontSize:9,width:"54%"}} formatter={(v,e)=><span style={{color:"#64748b"}}>{v} ({e.payload?.pct}%)</span>}/>
           </PieChart></ResponsiveContainer>
         </div>
@@ -568,14 +585,14 @@ export default function App(){
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
         <div style={S.sec}><div style={S.st}>Casualties Over Time</div>
           <ResponsiveContainer width="100%" height={200}><LineChart data={cas} margin={{top:2,right:14,bottom:2,left:0}}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#0f1f3d"/><XAxis dataKey="lbl" tick={{fill:"#475569",fontSize:9}} interval={4}/><YAxis yAxisId="l" tick={{fill:"#475569",fontSize:9}}/><YAxis yAxisId="r" orientation="right" tick={{fill:"#475569",fontSize:9}}/><Tooltip contentStyle={{background:"#0f1f3d",border:"1px solid #1e3a5f",fontSize:10}}/><Legend wrapperStyle={{fontSize:10}}/>
+            <CartesianGrid strokeDasharray="3 3" stroke="#1A6B6533"/><XAxis dataKey="lbl" tick={{fill:"#4A6361",fontSize:9}} interval={4}/><YAxis yAxisId="l" tick={{fill:"#4A6361",fontSize:9}}/><YAxis yAxisId="r" orientation="right" tick={{fill:"#4A6361",fontSize:9}}/><Tooltip contentStyle={{background:"#124E49",border:"1px solid #1A6B65",fontSize:10}}/><Legend wrapperStyle={{fontSize:10}}/>
             <Line yAxisId="l" type="monotone" dataKey="killed" stroke="#f43f5e" strokeWidth={2} dot={false}/><Line yAxisId="r" type="monotone" dataKey="wounded" stroke="#fb923c" strokeWidth={2} dot={false}/>
           </LineChart></ResponsiveContainer>
         </div>
         <div style={S.sec}><div style={S.st}>Oblast Breakdown</div>
           {OBLS.map(o=>{const d=oSt[o]||{t:0,mo:0,bl:0,cr:0};const pct=filt.length>0?Math.round(d.t/filt.length*100):0;return(<div key={o} style={{marginBottom:12}}>
             <div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}><span style={{color:OC[o],fontWeight:700,fontSize:12}}>{o}</span><span style={{color:"#e2e8f0",fontWeight:700}}>{d.t} <span style={{color:"#475569",fontSize:10,fontWeight:400}}>incidents</span></span></div>
-            <div style={{background:"#060d1a",borderRadius:2,height:4,marginBottom:4}}><div style={{background:OC[o],width:`${pct}%`,height:"100%",borderRadius:2}}/></div>
+            <div style={{background:"#0d1e1d",borderRadius:2,height:4,marginBottom:4}}><div style={{background:OC[o],width:`${pct}%`,height:"100%",borderRadius:2}}/></div>
             <div style={{display:"flex",gap:10,fontSize:10}}><span style={{color:"#f43f5e"}}>K:{d.mo}</span><span style={{color:"#fb923c"}}>W:{d.bl}</span><span style={{color:"#f43f5e"}}>Crit:{d.cr}</span></div>
           </div>);})}
         </div>
@@ -612,7 +629,7 @@ export default function App(){
             <div style={{color:"#475569",fontSize:10,lineHeight:1.4}}>{m.desc}</div>
           </div>))}
         </div>
-        <div style={{background:"#060d1a",borderRadius:5,padding:"8px 12px",fontSize:10,color:"#475569"}}>
+        <div style={{background:"#0d1e1d",borderRadius:5,padding:"8px 12px",fontSize:10,color:"#475569"}}>
           <span style={{color:"#60a5fa",fontFamily:"monospace"}}>
             {method==="official"&&"Composite = SRA_Score (L×I) · Divergence flagged only"}
             {method==="c70"&&"Composite = 0.70 × SRA_Score + 0.30 × Signal_Incidents · Signal = Σ(sev_weight × count) / max_weighted × 16"}
@@ -751,7 +768,7 @@ export default function App(){
           {oblF.map(o=>{
             const oblD=alerts.filter(r=>r.oblTriggers?.some(ot=>ot.typeD&&ot.oblast===o)).length;
             const oblA=alerts.filter(r=>r.oblTriggers?.some(ot=>ot.typeA&&!r.oblTriggers.some(x=>x.typeD&&x.oblast===o)&&ot.oblast===o)).length;
-            return(<div key={o} style={{background:"#060d1a",border:`1px solid ${OC[o]}33`,borderLeft:`3px solid ${OC[o]}`,borderRadius:6,padding:"8px 10px"}}>
+            return(<div key={o} style={{background:"#0d1e1d",border:`1px solid ${OC[o]}33`,borderLeft:`3px solid ${OC[o]}`,borderRadius:6,padding:"8px 10px"}}>
               <div style={{color:OC[o],fontWeight:700,fontSize:12,marginBottom:5}}>{o}</div>
               <div style={{display:"flex",gap:10}}>
                 <div><div style={{color:"#f43f5e",fontSize:16,fontWeight:900,lineHeight:1}}>{oblD}</div><div style={{color:"#475569",fontSize:9}}>Type D</div></div>
@@ -786,7 +803,7 @@ export default function App(){
           </div>
           <div style={{marginBottom:11}}>
             <div style={{color:"#334155",fontSize:9,fontWeight:600,letterSpacing:"0.08em",marginBottom:5}}>SITUATION ANALYSIS</div>
-            <div style={{background:"#060d1a",borderRadius:5,padding:"9px 11px",color:"#94a3b8",fontSize:11,lineHeight:1.6,marginBottom:8}}>
+            <div style={{background:"#0d1e1d",borderRadius:5,padding:"9px 11px",color:"#94a3b8",fontSize:11,lineHeight:1.6,marginBottom:8}}>
               {r.incTrend!==null&&r.incTrend>=30&&<span>Incident frequency has increased by <strong style={{color:"#f43f5e"}}>{r.incTrend>0?"+":""}{r.incTrend}%</strong> compared to the prior equivalent period ({prior.sl}–{prior.el}), with <strong style={{color:"#60a5fa"}}>{r.cnt} total observations</strong> across all oblasts. </span>}
               {r.critCnt>=2&&<span><strong style={{color:"#f43f5e"}}>{r.critCnt} CRITICAL-severity incidents</strong> have been documented in this period — meeting the evidence threshold for a formal out-of-cycle review. </span>}
               {r.div>0&&method!=="official"&&<span>The composite score (<strong style={{color:CC(r.comp)}}>{r.comp}</strong>) diverges by <strong style={{color:"#fb923c"}}>+{r.div} points</strong> above the SRA baseline. </span>}
@@ -845,7 +862,7 @@ export default function App(){
               </div>
             </div>
           </div>
-          <div style={{background:"#060d1a",borderRadius:5,padding:"8px 10px",color:"#94a3b8",fontSize:10,lineHeight:1.5,marginBottom:9}}>
+          <div style={{background:"#0d1e1d",borderRadius:5,padding:"8px 10px",color:"#94a3b8",fontSize:10,lineHeight:1.5,marginBottom:9}}>
             SRA formally rates <strong style={{color:"#e2e8f0"}}>{r.nom}</strong> as <strong style={{color:TC[r.trend]}}>{r.trend}</strong>, but incident data for {fmy(ps.m,ps.y)}–{fmy(pe.m,pe.y)} generates a composite score of <strong style={{color:CC(r.comp)}}>{r.comp}</strong> — a divergence of <strong style={{color:"#fb923c"}}>+{r.div}</strong> above the baseline ({r.score}). Field data is running ahead of the formal assessment. Increased monitoring recommended; flag for next SRA revision.
           </div>
           {r.oblTriggers&&r.oblTriggers.filter(ot=>ot.typeA).length>0&&(<div style={{marginBottom:9}}>
@@ -879,16 +896,16 @@ export default function App(){
 
     {/* EXECUTIVE BRIEF */}
     {tab==="exec"&&(<div style={{padding:"22px",maxWidth:800,margin:"0 auto"}}>
-      <div style={{background:"#0f1f3d",border:"1px solid #1e3a5f",borderRadius:8,padding:26}}>
+      <div style={{background:"#124E49",border:"1px solid #1A6B65",borderRadius:8,padding:26}}>
         <div style={{borderBottom:"2px solid #f43f5e",paddingBottom:12,marginBottom:18}}>
           <div style={{color:"#f43f5e",fontSize:9,letterSpacing:"0.2em",fontWeight:600,marginBottom:4}}>INTERNAL — RESTRICTED CIRCULATION</div>
           <div style={{color:"#e2e8f0",fontSize:18,fontWeight:900,marginBottom:3}}>Ukraine Conflict Monitor</div>
           <div style={{color:"#94a3b8",fontSize:11}}>Security Situation Brief — {fmy(ps.m,ps.y)} to {fmy(pe.m,pe.y)}</div>
         </div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:9,marginBottom:18}}>
-          {[{l:"Incidents",v:kpi.tot,c:"#e2e8f0"},{l:"Killed",v:kpi.mo,c:"#f43f5e"},{l:"Wounded",v:kpi.bl,c:"#fb923c"},{l:"Critical",v:kpi.cr,c:"#f43f5e"}].map(k=>(<div key={k.l} style={{background:"#060d1a",borderRadius:5,padding:"11px",textAlign:"center"}}><div style={{color:k.c,fontSize:24,fontWeight:900}}>{k.v}</div><div style={{color:"#475569",fontSize:10,marginTop:2}}>{k.l}</div></div>))}
+          {[{l:"Incidents",v:kpi.tot,c:"#e2e8f0"},{l:"Killed",v:kpi.mo,c:"#f43f5e"},{l:"Wounded",v:kpi.bl,c:"#fb923c"},{l:"Critical",v:kpi.cr,c:"#f43f5e"}].map(k=>(<div key={k.l} style={{background:"#0d1e1d",borderRadius:5,padding:"11px",textAlign:"center"}}><div style={{color:k.c,fontSize:24,fontWeight:900}}>{k.v}</div><div style={{color:"#475569",fontSize:10,marginTop:2}}>{k.l}</div></div>))}
         </div>
-        <div style={{background:"#060d1a",borderRadius:5,padding:"9px 12px",marginBottom:14}}>
+        <div style={{background:"#0d1e1d",borderRadius:5,padding:"9px 12px",marginBottom:14}}>
           <div style={{color:"#334155",fontSize:9,fontWeight:600,marginBottom:5}}>PERIOD COMPARISON</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
             <div><div style={{color:"#475569",fontSize:9}}>Current period</div><div style={{color:"#e2e8f0",fontWeight:700,fontSize:11}}>{fmy(ps.m,ps.y)} – {fmy(pe.m,pe.y)}</div><div style={{color:"#94a3b8",fontSize:11}}>{kpi.tot} incidents</div></div>
@@ -903,7 +920,7 @@ export default function App(){
         </div>)}
         <div style={{marginBottom:14}}>
           <div style={{color:"#334155",fontSize:9,fontWeight:600,letterSpacing:"0.08em",marginBottom:9}}>OBLAST BREAKDOWN</div>
-          {OBLS.map(o=>{const d=oSt[o]||{t:0,mo:0,bl:0,cr:0};const pct=filt.length>0?Math.round(d.t/filt.length*100):0;return(<div key={o} style={{display:"flex",alignItems:"center",gap:9,marginBottom:7}}><div style={{color:OC[o],width:75,fontSize:11,fontWeight:700,flexShrink:0}}>{o}</div><div style={{flex:1,background:"#060d1a",borderRadius:2,height:4}}><div style={{background:OC[o],width:`${pct}%`,height:"100%",borderRadius:2}}/></div><div style={{color:"#e2e8f0",width:28,textAlign:"right",fontSize:12,fontWeight:700}}>{d.t}</div><div style={{color:"#475569",fontSize:10,width:85,flexShrink:0}}>K:{d.mo} W:{d.bl} C:{d.cr}</div></div>);})}
+          {OBLS.map(o=>{const d=oSt[o]||{t:0,mo:0,bl:0,cr:0};const pct=filt.length>0?Math.round(d.t/filt.length*100):0;return(<div key={o} style={{display:"flex",alignItems:"center",gap:9,marginBottom:7}}><div style={{color:OC[o],width:75,fontSize:11,fontWeight:700,flexShrink:0}}>{o}</div><div style={{flex:1,background:"#0d1e1d",borderRadius:2,height:4}}><div style={{background:OC[o],width:`${pct}%`,height:"100%",borderRadius:2}}/></div><div style={{color:"#e2e8f0",width:28,textAlign:"right",fontSize:12,fontWeight:700}}>{d.t}</div><div style={{color:"#475569",fontSize:10,width:85,flexShrink:0}}>K:{d.mo} W:{d.bl} C:{d.cr}</div></div>);})}
         </div>
         <div style={{marginBottom:14}}>
           <div style={{color:"#334155",fontSize:9,fontWeight:600,letterSpacing:"0.08em",marginBottom:9}}>TOP 5 INCIDENT TYPES</div>
@@ -943,7 +960,7 @@ export default function App(){
         </table></div>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:9}}>
           <div style={{color:"#334155",fontSize:10}}>Page {pg+1}/{totP} — {tblD.length} results</div>
-          <div style={{display:"flex",gap:3}}>{[["«",()=>setPg(0)],["‹",()=>setPg(p=>Math.max(0,p-1))],["›",()=>setPg(p=>Math.min(totP-1,p+1))],["»",()=>setPg(totP-1)]].map(([l,fn],i)=>(<button key={i} onClick={fn} style={{padding:"3px 6px",background:"#0f1f3d",border:"1px solid #1e3a5f",color:"#64748b",borderRadius:3,cursor:"pointer",fontSize:11}}>{l}</button>))}</div>
+          <div style={{display:"flex",gap:3}}>{[["«",()=>setPg(0)],["‹",()=>setPg(p=>Math.max(0,p-1))],["›",()=>setPg(p=>Math.min(totP-1,p+1))],["»",()=>setPg(totP-1)]].map(([l,fn],i)=>(<button key={i} onClick={fn} style={{padding:"3px 6px",background:"#124E49",border:"1px solid #1A6B65",color:"#64748b",borderRadius:3,cursor:"pointer",fontSize:11}}>{l}</button>))}</div>
         </div>
       </div>
     </div>)}
@@ -973,13 +990,13 @@ export default function App(){
           <span style={{background:TC[riskM.trend]+"22",color:TC[riskM.trend],borderRadius:4,padding:"2px 8px",fontSize:9,fontWeight:700}}>{TI[riskM.trend]}</span>
         </div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:6,marginBottom:11}}>
-          {[{l:"SRA Score",v:riskM.score,c:CC(riskM.score)},{l:"Likelihood",v:riskM.l,c:"#94a3b8"},{l:"Impact",v:riskM.i,c:riskM.i==="Critical"?"#f43f5e":"#fb923c"},{l:"Composite",v:riskM.comp,c:CC(riskM.comp)}].map(k=>(<div key={k.l} style={{background:"#060d1a",borderRadius:5,padding:"7px",textAlign:"center"}}><div style={{color:k.c,fontSize:17,fontWeight:900}}>{k.v}</div><div style={{color:"#334155",fontSize:9}}>{k.l}</div></div>))}
+          {[{l:"SRA Score",v:riskM.score,c:CC(riskM.score)},{l:"Likelihood",v:riskM.l,c:"#94a3b8"},{l:"Impact",v:riskM.i,c:riskM.i==="Critical"?"#f43f5e":"#fb923c"},{l:"Composite",v:riskM.comp,c:CC(riskM.comp)}].map(k=>(<div key={k.l} style={{background:"#0d1e1d",borderRadius:5,padding:"7px",textAlign:"center"}}><div style={{color:k.c,fontSize:17,fontWeight:900}}>{k.v}</div><div style={{color:"#334155",fontSize:9}}>{k.l}</div></div>))}
         </div>
         {focObl&&OBL_OVR[riskM.id]?.[focObl]&&(<div style={{background:"#1a0a0a",borderRadius:5,padding:"7px 10px",marginBottom:9,fontSize:10}}>
           <span style={{color:"#f43f5e",fontWeight:700}}>{focObl} score: {riskM.oblSc}/16</span>
           <span style={{color:"#475569",marginLeft:8}}>(+{riskM.oblSc-riskM.score} vs national — front-line override)</span>
         </div>)}
-        {riskM.hasS&&(<div style={{background:"#060d1a",borderRadius:5,padding:"7px 10px",marginBottom:9,fontSize:10}}>
+        {riskM.hasS&&(<div style={{background:"#0d1e1d",borderRadius:5,padding:"7px 10px",marginBottom:9,fontSize:10}}>
           <div style={{color:"#334155",fontSize:9,fontWeight:600,marginBottom:3}}>INCIDENT DATA (CURRENT PERIOD)</div>
           <div style={{display:"flex",gap:14,color:"#94a3b8",flexWrap:"wrap"}}>
             <span>Observed: <span style={{color:"#60a5fa",fontWeight:700}}>{riskM.cnt}</span></span>
@@ -990,25 +1007,25 @@ export default function App(){
         </div>)}
         <div style={{marginBottom:8}}>
           <div style={{color:"#334155",fontSize:9,fontWeight:600,marginBottom:3}}>OBLAST DIFFERENTIAL (SRA)</div>
-          <div style={{background:"#060d1a",borderRadius:5,padding:"7px 10px",color:"#475569",fontSize:10,lineHeight:1.5}}>{riskM.od}</div>
+          <div style={{background:"#0d1e1d",borderRadius:5,padding:"7px 10px",color:"#475569",fontSize:10,lineHeight:1.5}}>{riskM.od}</div>
         </div>
         {SRA_J[riskM.id]&&(<div>
           <div style={{color:"#334155",fontSize:9,fontWeight:600,marginBottom:3}}>SRA JUSTIFICATION</div>
-          <div style={{background:"#060d1a",borderRadius:5,padding:"7px 10px",color:"#94a3b8",fontSize:10,lineHeight:1.6}}>{SRA_J[riskM.id].j}</div>
+          <div style={{background:"#0d1e1d",borderRadius:5,padding:"7px 10px",color:"#94a3b8",fontSize:10,lineHeight:1.6}}>{SRA_J[riskM.id].j}</div>
         </div>)}
       </div>
     </div>)}
 
     {/* INCIDENT MODAL */}
     {descM&&(<div onClick={()=>setDescM(null)} style={{position:"fixed",inset:0,background:"#000000aa",display:"flex",alignItems:"center",justifyContent:"center",zIndex:100}}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#0f1f3d",border:"1px solid #1e3a5f",borderRadius:10,padding:22,maxWidth:500,width:"90%",position:"relative"}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#124E49",border:"1px solid #1A6B65",borderRadius:10,padding:22,maxWidth:500,width:"90%",position:"relative"}}>
         <button onClick={()=>setDescM(null)} style={{position:"absolute",top:9,right:9,background:"none",border:"none",color:"#475569",cursor:"pointer",fontSize:18}}>✕</button>
         <div style={{color:"#f43f5e",fontSize:9,marginBottom:3}}>{descM.id}</div>
         <div style={{color:"#e2e8f0",fontSize:13,fontWeight:700,marginBottom:10}}>{descM.date_exacte} — {descM.oblast} / {descM.hromada}</div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:10,fontSize:11}}>
           {[["Risk",descM.risk_id],["Target",descM.cible],["Killed",descM.morts],["Wounded",descM.blesses],["Severity",descM.severite],["Status",descM.statut]].map(([k,v])=>(<div key={k}><span style={{color:"#334155"}}>{k}: </span><span style={{color:"#e2e8f0",fontWeight:600}}>{v}</span></div>))}
         </div>
-        <div style={{background:"#060d1a",borderRadius:5,padding:"9px",color:"#94a3b8",fontSize:11,lineHeight:1.6,marginBottom:9}}>{descM.description}</div>
+        <div style={{background:"#0d1e1d",borderRadius:5,padding:"9px",color:"#94a3b8",fontSize:11,lineHeight:1.6,marginBottom:9}}>{descM.description}</div>
         <div style={{color:"#334155",fontSize:10,marginBottom:9}}>Source: {descM.source}</div>
         <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
           <span style={{background:SC[descM.severite]+"22",color:SC[descM.severite],borderRadius:3,padding:"2px 6px",fontSize:9,fontWeight:700}}>{descM.severite}</span>
@@ -1038,7 +1055,7 @@ export default function App(){
         <div style={{marginTop:7}}><div style={{color:"#334155",fontSize:9,marginBottom:2,textTransform:"uppercase",letterSpacing:"0.05em"}}>Description</div><textarea value={newI.description} onChange={e=>setNewI(p=>({...p,description:e.target.value}))} rows={3} style={{...S.inp,resize:"vertical"}}/></div>
         <div style={{display:"flex",gap:9,marginTop:12}}>
           <button onClick={addI} style={{flex:1,padding:8,background:"#22c55e22",border:"1px solid #22c55e",color:"#22c55e",borderRadius:4,cursor:"pointer",fontSize:12,fontFamily:"inherit",fontWeight:700}}>✓ Add Incident</button>
-          <button onClick={()=>setAddM(false)} style={{flex:1,padding:8,background:"#060d1a",border:"1px solid #1e3a5f",color:"#475569",borderRadius:4,cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>Cancel</button>
+          <button onClick={()=>setAddM(false)} style={{flex:1,padding:8,background:"#0d1e1d",border:"1px solid #1e3a5f",color:"#475569",borderRadius:4,cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>Cancel</button>
         </div>
       </div>
     </div>)}
