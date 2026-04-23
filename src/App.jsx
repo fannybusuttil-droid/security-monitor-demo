@@ -376,6 +376,8 @@ export default function App(){
   const [rmF,setRmF]=useState("ALL");
   const [rmSrt,setRmSrt]=useState("comp");
   const [rmGap,setRmGap]=useState(0);
+  const [sraReview,setSraReview]=useState({}); // {risk_id: {natScore, oblScores:{oblast:score}}}
+  const [sraApplied,setSraApplied]=useState({}); // applied overrides
   const [rmSec,setRmSec]=useState("ALL");
   const [method,setMethod]=useState("c70");
   const [focObl,setFocObl]=useState(null);
@@ -495,6 +497,7 @@ export default function App(){
     {id:"analytics",ico:"◎",lbl:"Analytics"},
     {id:"sra",ico:"◇",lbl:"SRA Matrix"},
     {id:"triggers",ico:"⚑",lbl:`Triggers${alerts.length>0?` (${alerts.length})`:""}`,warn:alerts.length>0},
+    {id:"review",ico:"✎",lbl:`SRA Review${Object.keys(sraReview).length>0?` (${Object.keys(sraReview).length})`:""}`,warn:Object.keys(sraReview).length>0},
     {id:"exec",ico:"◆",lbl:"Executive Brief"},
     {id:"log",ico:"▤",lbl:"Incident Log"},
   ];
@@ -892,6 +895,138 @@ export default function App(){
       </div>)}
 
       {alerts.length===0&&(<div style={{...S.sec,textAlign:"center",padding:36}}><div style={{color:"#334155",fontSize:14,marginBottom:7}}>✓ No triggers active</div><div style={{color:"#475569",fontSize:11}}>No divergence detected between SRA baseline and current incident data for the selected period and oblasts.</div></div>)}
+    </div>)}
+
+    {tab==="review"&&(<div style={{padding:"16px 22px 80px"}}>
+      {/* HEADER */}
+      <div style={{...S.sec,marginBottom:12}}>
+        <div style={S.st}>SRA Review Panel — Pipeline Suggestions vs Current Scores</div>
+        <div style={{color:"#E8F4F3",fontSize:11,lineHeight:1.6,marginBottom:10}}>
+          This panel shows score changes suggested by the automated pipeline. <strong style={{color:BR.gold}}>No change is applied automatically</strong> — each suggestion must be reviewed and manually approved. Applied changes affect the dashboard only and do not modify the official SRA document.
+        </div>
+        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+          <button onClick={()=>{
+            // Load demo suggestions for testing
+            const demo={
+              "1.1.3":{natScore:14,reason:"Significant increase in FPV drone incidents across all 4 oblasts — frequency up 40% vs prior period.",oblScores:{"Sumy":16,"Chernihiv":14,"Kyiv City":12,"Kyiv Oblast":12}},
+              "6.4.2":{natScore:13,reason:"Access denial incidents in Sumy border raions increased. New military zones established Feb-Mar 2026.",oblScores:{"Sumy":16,"Chernihiv":6,"Kyiv City":2,"Kyiv Oblast":4}},
+              "6.1.3":{natScore:13,reason:"Disinformation campaigns targeting ICRC intensified on Ukrainian social media (Telegram, Twitter/X).",oblScores:{"Sumy":16,"Chernihiv":12,"Kyiv City":12,"Kyiv Oblast":10}},
+            };
+            setSraReview(demo);
+          }} style={{...S.btn(false,BR.gold),color:BR.gold,border:`1px solid ${BR.gold}`}}>⟳ Load Demo Suggestions</button>
+          <button onClick={()=>setSraReview({})} style={{...S.btn(false,"#c0392b"),color:"#c0392b",border:"1px solid #c0392b44"}}>✕ Clear All Suggestions</button>
+          {Object.keys(sraApplied).length>0&&<span style={{color:"#2A8F87",fontSize:10,alignSelf:"center"}}>{Object.keys(sraApplied).length} change(s) applied to dashboard</span>}
+        </div>
+      </div>
+
+      {Object.keys(sraReview).length===0&&(<div style={{...S.sec,textAlign:"center",padding:40}}>
+        <div style={{color:BR.gold,fontSize:13,marginBottom:8}}>No pipeline suggestions loaded</div>
+        <div style={{color:"#E8F4F3",fontSize:11}}>Run the N8n pipeline to generate SRA update suggestions, or click "Load Demo Suggestions" to preview the interface.</div>
+      </div>)}
+
+      {Object.keys(sraReview).length>0&&(<div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:12}}>
+          {[
+            {l:"SUGGESTIONS PENDING",v:Object.keys(sraReview).filter(id=>!sraApplied[id]).length,c:BR.gold},
+            {l:"CHANGES APPLIED",v:Object.keys(sraApplied).length,c:"#2A8F87"},
+            {l:"RISKS REVIEWED",v:Object.keys(sraReview).length,c:"#E8F4F3"},
+          ].map(k=>(<div key={k.l} style={S.card}>
+            <div style={{color:BR.gold,fontSize:9,letterSpacing:"0.12em",marginBottom:4}}>{k.l}</div>
+            <div style={{color:k.c,fontSize:24,fontWeight:900}}>{k.v}</div>
+          </div>))}
+        </div>
+
+        {/* NATIONAL SCORES */}
+        <div style={{...S.sec,marginBottom:10}}>
+          <div style={S.st}>National Score Suggestions</div>
+          <div style={{overflowX:"auto"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+            <thead><tr style={{borderBottom:`2px solid ${BR.teal}33`}}>
+              {[["ID",55],["Risk",200],["Current National",110],["Suggested",90],["Δ",55],["Justification",null],["Action",80]].map(([h,w])=>(
+                <th key={h} style={{padding:"6px 8px",textAlign:"left",color:BR.gold,fontSize:9,letterSpacing:"0.1em",width:w||"auto"}}>{h}</th>
+              ))}
+            </tr></thead>
+            <tbody>{Object.entries(sraReview).map(([id,s])=>{
+              const r=SRA_DATA.find(x=>x.id===id);
+              if(!r)return null;
+              const current=sraApplied[id]?.natScore||r.score;
+              const suggested=s.natScore;
+              const delta=suggested-current;
+              const applied=!!sraApplied[id];
+              return(<tr key={id} style={{borderBottom:`1px solid ${BR.teal}22`,background:applied?"#0d2e1a":delta>0?"#1a0a05":"transparent"}}>
+                <td style={{padding:"6px 8px",color:BR.teal,fontWeight:700,fontSize:10}}>{id}</td>
+                <td style={{padding:"6px 8px",color:"#E8F4F3",fontSize:10}}>{r.nom}</td>
+                <td style={{padding:"6px 8px"}}>
+                  <div style={{display:"flex",gap:6,alignItems:"center"}}>
+                    <span style={{color:CC(current),fontWeight:900,fontSize:14}}>{current}</span>
+                    <div style={{background:`${BR.teal}22`,borderRadius:2,height:5,width:50}}><div style={{background:CC(current),width:`${(current/16)*100}%`,height:"100%",borderRadius:2}}/></div>
+                  </div>
+                </td>
+                <td style={{padding:"6px 8px"}}>
+                  <span style={{color:CC(suggested),fontWeight:900,fontSize:14}}>{suggested}</span>
+                </td>
+                <td style={{padding:"6px 8px"}}>
+                  {delta>0&&<span style={{color:"#f87171",fontWeight:700}}>▲+{delta}</span>}
+                  {delta<0&&<span style={{color:"#2A8F87",fontWeight:700}}>▼{delta}</span>}
+                  {delta===0&&<span style={{color:"#4A6361"}}>—</span>}
+                </td>
+                <td style={{padding:"6px 8px",color:"#E8F4F3",fontSize:9,lineHeight:1.4}}>{s.reason}</td>
+                <td style={{padding:"6px 8px"}}>
+                  {!applied
+                    ?<button onClick={()=>setSraApplied(p=>({...p,[id]:{natScore:s.natScore,oblScores:s.oblScores}}))}
+                        style={{...S.btn(true,BR.gold),fontSize:9,padding:"3px 8px"}}>✓ Apply</button>
+                    :<button onClick={()=>setSraApplied(p=>{const n={...p};delete n[id];return n;})}
+                        style={{...S.btn(true,"#2A8F87"),fontSize:9,padding:"3px 8px"}}>↩ Revert</button>
+                  }
+                </td>
+              </tr>);
+            })}</tbody>
+          </table></div>
+        </div>
+
+        {/* OBLAST SCORES */}
+        <div style={S.sec}>
+          <div style={S.st}>Oblast-Level Score Suggestions</div>
+          {Object.entries(sraReview).map(([id,s])=>{
+            const r=SRA_DATA.find(x=>x.id===id);
+            if(!r||!s.oblScores)return null;
+            const applied=!!sraApplied[id];
+            return(<div key={id} style={{marginBottom:14,paddingBottom:14,borderBottom:`1px solid ${BR.teal}22`}}>
+              <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8,flexWrap:"wrap"}}>
+                <span style={{color:BR.gold,fontWeight:700,fontSize:11}}>{id}</span>
+                <span style={{color:"#E8F4F3",fontSize:11}}>{r.nom}</span>
+                {applied&&<span style={{background:"#0d2e1a",color:"#2A8F87",fontSize:9,padding:"2px 7px",borderRadius:3,border:"1px solid #2A8F8744"}}>✓ Applied</span>}
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
+                {OBLS.map(o=>{
+                  const current=sraApplied[id]?.oblScores?.[o]||OBL_OVR[id]?.[o]||r.score;
+                  const suggested=s.oblScores[o]||r.score;
+                  const delta=suggested-current;
+                  return(<div key={o} style={{background:delta>0?"#1a0a05":"#0f1e1d",border:`1px solid ${OC[o]}33`,borderLeft:`3px solid ${OC[o]}`,borderRadius:6,padding:"8px 10px"}}>
+                    <div style={{color:OC[o],fontWeight:700,fontSize:10,marginBottom:6}}>{o}</div>
+                    <div style={{display:"flex",gap:10,alignItems:"center"}}>
+                      <div>
+                        <div style={{color:"#E8F4F3",fontSize:8,marginBottom:2}}>Current</div>
+                        <div style={{color:CC(current),fontWeight:900,fontSize:16}}>{current}</div>
+                      </div>
+                      <div style={{color:"#4A6361",fontSize:14}}>→</div>
+                      <div>
+                        <div style={{color:"#E8F4F3",fontSize:8,marginBottom:2}}>Suggested</div>
+                        <div style={{color:CC(suggested),fontWeight:900,fontSize:16}}>{suggested}</div>
+                      </div>
+                      {delta!==0&&<div style={{color:delta>0?"#f87171":"#2A8F87",fontSize:10,fontWeight:700,alignSelf:"flex-end"}}>
+                        {delta>0?`▲+${delta}`:`▼${delta}`}
+                      </div>}
+                    </div>
+                  </div>);
+                })}
+              </div>
+            </div>);
+          })}
+          <div style={{color:"#4A6361",fontSize:9,marginTop:8}}>
+            Apply changes in the National table above to activate oblast overrides. Changes affect dashboard only — not the official SRA document.
+          </div>
+        </div>
+      </div>)}
     </div>)}
 
     {/* EXECUTIVE BRIEF */}
