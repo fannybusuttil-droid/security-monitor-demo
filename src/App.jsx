@@ -12,7 +12,7 @@ import { AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Brush } from "recharts";
 
 // ── SRA DATA Feb 2026 (68 risks) ─────────────────────────────
-const SRA_V = "February 2026";
+const SRA_V = "April 2026";
 // [id, nom, likelihood, impact, score, trend, perc(0/1), oblast_diff, section, sub]
 const SR = [
   ["1.1.1","Aerial bombardments / airstrikes","High","High",9,"STABLE",1,"Sumy:HIGH|Chernihiv:MED|Kyiv City:MED|Kyiv Oblast:MED","1—CONFLICT","1.1 Hostilities"],
@@ -480,7 +480,7 @@ export default function App(){
     tab:(a,w)=>({padding:"12px 20px",color:a?BR.white:w?BR.gold:`${BR.white}66`,background:"transparent",border:"none",borderBottom:a?`2px solid ${BR.gold}`:"2px solid transparent",cursor:"pointer",fontSize:12,fontWeight:a?600:400,whiteSpace:"nowrap",fontFamily:"'DM Sans',sans-serif",letterSpacing:"0.04em",textTransform:"uppercase"}),
     fbar:{background:"#0f1e1d",borderBottom:`1px solid ${BR.teal}33`,padding:"8px 22px",position:"sticky",top:136,zIndex:50},
     btn:(a,c)=>({padding:"4px 10px",background:a?c+"22":"transparent",border:`1px solid ${a?c:BR.teal+"44"}`,color:a?c:`${BR.white}55`,borderRadius:4,cursor:"pointer",fontSize:10,fontFamily:"'DM Sans',sans-serif",fontWeight:a?600:400,letterSpacing:"0.03em"}),
-    card:{background:BR.tealDark,border:`1px solid ${BR.teal}44`,borderRadius:8,padding:"13px 15px"},
+    card:{background:"#1A3E3A",border:`1px solid ${BR.teal}66`,borderRadius:8,padding:"13px 15px"},
     sec:{background:"#0f1e1d",border:`1px solid ${BR.teal}33`,borderRadius:8,padding:"16px"},
     st:{color:BR.gold,fontSize:9,letterSpacing:"0.16em",textTransform:"uppercase",marginBottom:10,fontWeight:700,fontFamily:"'DM Sans',sans-serif",display:"flex",alignItems:"center",gap:6},
     inp:{background:BR.charcoal,border:`1px solid ${BR.teal}55`,color:BR.white,borderRadius:4,padding:"5px 8px",fontSize:11,fontFamily:"'DM Sans',sans-serif",width:"100%",boxSizing:"border-box"},
@@ -502,7 +502,7 @@ export default function App(){
   return(<div style={S.wrap}>
     <div style={S.hdr}>
       <div style={{display:"flex",alignItems:"center",gap:12}}>
-        <div style={{background:BR.gold,color:BR.charcoal,fontWeight:900,fontSize:10,letterSpacing:"0.15em",padding:"3px 8px",borderRadius:3,fontFamily:"'DM Sans',sans-serif"}}>BRIDGITAL</div>
+        <div style={{display:"flex",alignItems:"center",gap:6}}><div style={{background:BR.gold,color:BR.charcoal,fontWeight:900,fontSize:10,letterSpacing:"0.15em",padding:"3px 8px",borderRadius:3,fontFamily:"'DM Sans',sans-serif"}}>BRIDGITAL</div><div style={{width:28,height:28,borderRadius:"50%",background:BR.teal,border:`2px solid ${BR.gold}`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><span style={{color:BR.gold,fontSize:11,fontWeight:900,fontFamily:"'DM Sans',sans-serif"}}>B</span></div></div>
         <div>
           <div style={{color:BR.white,fontSize:15,fontWeight:300,fontFamily:"'Cormorant Garamond',serif",letterSpacing:"0.04em"}}>Ukraine Conflict Monitor</div>
           <div style={{color:`${BR.white}66`,fontSize:10,fontFamily:"'DM Sans',sans-serif",letterSpacing:"0.06em"}}>Humanitarian Security Tracking System · SRA {SRA_V}</div>
@@ -513,37 +513,37 @@ export default function App(){
 
     {/* NATIONAL KPI BANNER */}
     <div style={{background:"#0d1e1d",borderBottom:"1px solid #1e293b",padding:"5px 22px",display:"flex",gap:16,alignItems:"center",flexWrap:"wrap"}}>
-      <div style={{color:"#334155",fontSize:9,letterSpacing:"0.1em",fontWeight:600,flexShrink:0}}>🇺🇦 NATIONAL EST.</div>
+      <div style={{color:BR.gold,fontSize:9,letterSpacing:"0.1em",fontWeight:700,flexShrink:0}}>🇺🇦 NATIONAL EST.</div>
       <div style={{display:"flex",gap:14,alignItems:"center",flexWrap:"wrap"}}>
-        <span style={{color:"#64748b",fontSize:10}}>Total incidents: <span style={{color:"#e2e8f0",fontWeight:700}}>{natKpi.total.toLocaleString()}</span></span>
-        <span style={{color:"#64748b",fontSize:10}}>Killed: <span style={{color:"#f43f5e",fontWeight:700}}>{natKpi.killed.toLocaleString()}</span></span>
-        <span style={{color:"#64748b",fontSize:10}}>Wounded: <span style={{color:"#fb923c",fontWeight:700}}>{natKpi.wounded.toLocaleString()}</span></span>
-        <span style={{color:"#64748b",fontSize:10}}>4-zone share: <span style={{color:"#60a5fa",fontWeight:700}}>{natKpi.top4share}%</span></span>
+        <span style={{color:"#E8F4F3",fontSize:10}}>Total incidents: <span style={{color:BR.white,fontWeight:700}}>{natKpi.total.toLocaleString()}</span></span>
+        <span style={{color:"#E8F4F3",fontSize:10}}>Killed: <span style={{color:"#f87171",fontWeight:700}}>{natKpi.killed.toLocaleString()}</span></span>
+        <span style={{color:"#E8F4F3",fontSize:10}}>Wounded: <span style={{color:"#fb923c",fontWeight:700}}>{natKpi.wounded.toLocaleString()}</span></span>
+        <span style={{color:"#E8F4F3",fontSize:10}}>4-zone share: <span style={{color:BR.gold,fontWeight:700}}>{natKpi.top4share}%</span></span>
         <div style={{display:"flex",gap:6,alignItems:"center"}}>
-          {natKpi.topObl.map(([o,v])=>(<span key={o} style={{fontSize:9,color:"#334155"}}>{o}: <span style={{color:"#94a3b8"}}>{v.toLocaleString()}</span></span>))}
+          {natKpi.topObl.map(([o,v])=>(<span key={o} style={{fontSize:9,color:"#E8F4F3"}}>{o}: <span style={{color:BR.white,fontWeight:600}}>{v.toLocaleString()}</span></span>))}
         </div>
       </div>
-      <div style={{marginLeft:"auto",color:"#1e3a5f",fontSize:9}}>ACLED-based extrapolation · 4 zones ≈ 15% of Ukraine events · Demo data</div>
+      <div style={{marginLeft:"auto",color:`${BR.white}55`,fontSize:9}}>ACLED-based extrapolation · 4 zones ≈ 15% of Ukraine events · Demo data</div>
     </div>
 
     <div style={S.tabs}>{TDEF.map(t=>(<button key={t.id} onClick={()=>setTab(t.id)} style={S.tab(tab===t.id,t.warn&&tab!==t.id)}>{t.ico} {t.lbl}</button>))}</div>
 
     <div style={S.fbar}>
       <div style={{display:"flex",flexWrap:"wrap",gap:5,alignItems:"center"}}>
-        <div style={{display:"flex",gap:3}}>{[["1M",1],["3M",3],["6M",6],["1Y",12],["2Y",24],["ALL",999]].map(([l,n])=>(<button key={l} onClick={()=>n===999?reset():preset(n)} style={S.btn(false,"#64748b")}>{l}</button>))}</div>
+        <div style={{display:"flex",gap:3}}>{[["1M",1],["3M",3],["6M",6],["1Y",12],["2Y",24],["ALL",999]].map(([l,n])=>{const active=n===999?(ps.y===2022&&ps.m===2):(()=>{const now={y:2026,m:3};let sm=now.m-n,sy=now.y;while(sm<=0){sm+=12;sy--;}return ps.y===sy&&ps.m===sm&&pe.y===now.y&&pe.m===now.m;})();return(<button key={l} onClick={()=>n===999?reset():preset(n)} style={{...S.btn(active,BR.gold),fontSize:11}}>{l}</button>);})}</div>
         <div style={{width:1,height:15,background:"#1e293b"}}/>
         {OBLS.map(o=>(<button key={o} onClick={()=>{setOblF(p=>p.includes(o)?p.filter(x=>x!==o):[...p,o]);setPg(0);}} style={S.btn(oblF.includes(o),OC[o])}>{o}</button>))}
         <button onClick={()=>setStatF(p=>p.includes("DEMO")?["VERIFIED"]:["VERIFIED","DEMO"])} style={{...S.btn(statF.includes("DEMO"),"#22c55e"),marginLeft:3}}>{statF.includes("DEMO")?"ALL DATA":"VERIFIED ONLY"}</button>
         <button onClick={reset} style={{...S.btn(false,"#f43f5e"),color:"#f43f5e",border:"1px solid #f43f5e44",marginLeft:"auto"}}>↺ Reset</button>
       </div>
-      <div style={{marginTop:4,color:"#334155",fontSize:10}}>{fmy(ps.m,ps.y)} → {fmy(pe.m,pe.y)} · <span style={{color:"#94a3b8",fontWeight:700}}>{filt.length}</span> incidents{kpi.pc!==null&&<span style={{color:kpi.pc>0?"#f43f5e":"#34d399",marginLeft:8}}>{kpi.pc>0?"▲":"▼"}{Math.abs(kpi.pc)}% vs {prior.sl}–{prior.el}</span>}</div>
+      <div style={{marginTop:4,color:"#E8F4F3",fontSize:10}}>{fmy(ps.m,ps.y)} → {fmy(pe.m,pe.y)} · <span style={{color:"#94a3b8",fontWeight:700}}>{filt.length}</span> incidents{kpi.pc!==null&&<span style={{color:kpi.pc>0?"#f43f5e":"#34d399",marginLeft:8}}>{kpi.pc>0?"▲":"▼"}{Math.abs(kpi.pc)}% vs {prior.sl}–{prior.el}</span>}</div>
     </div>
 
     {/* OVERVIEW */}
     {tab==="overview"&&(<div style={{padding:"16px 22px"}}>
       <div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:8,marginBottom:14}}>
         {[{l:"INCIDENTS",v:kpi.tot,c:"#e2e8f0"},{l:"KILLED",v:kpi.mo,c:"#f43f5e"},{l:"WOUNDED",v:kpi.bl,c:"#fb923c"},{l:"CRITICAL",v:kpi.cr,c:"#f43f5e"},{l:"MOST AFFECTED",v:kpi.tO?kpi.tO[0]:"-",c:kpi.tO?OC[kpi.tO[0]]:"#64748b",sm:1,sb:kpi.tO?`${kpi.tO[1]} incidents`:null},{l:"DOMINANT TYPE",v:kpi.tRd?kpi.tRd.id:"-",c:"#fbbf24",sm:1,sb:kpi.tRd?.nom}].map((k,i)=>(
-          <div key={i} style={S.card}><div style={{color:"#334155",fontSize:9,letterSpacing:"0.08em",marginBottom:5}}>{k.l}</div><div style={{color:k.c,fontSize:k.sm?13:22,fontWeight:900,lineHeight:1}}>{k.v}</div>{k.sb&&<div style={{color:"#475569",fontSize:9,marginTop:2,lineHeight:1.3}}>{k.sb}</div>}</div>
+          <div key={i} style={S.card}><div style={{color:"#C9A84C",fontSize:9,letterSpacing:"0.12em",marginBottom:6,fontWeight:700}}>{k.l}</div><div style={{color:k.c,fontSize:k.sm?16:26,fontWeight:900,lineHeight:1}}>{k.v}</div>{k.sb&&<div style={{color:"#E8F4F3",fontSize:10,marginTop:4,lineHeight:1.3}}>{k.sb}</div>}</div>
         ))}
       </div>
       <div style={{...S.sec,marginBottom:12}}>
@@ -960,7 +960,7 @@ export default function App(){
         </table></div>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:9}}>
           <div style={{color:"#334155",fontSize:10}}>Page {pg+1}/{totP} — {tblD.length} results</div>
-          <div style={{display:"flex",gap:3}}>{[["«",()=>setPg(0)],["‹",()=>setPg(p=>Math.max(0,p-1))],["›",()=>setPg(p=>Math.min(totP-1,p+1))],["»",()=>setPg(totP-1)]].map(([l,fn],i)=>(<button key={i} onClick={fn} style={{padding:"3px 6px",background:"#124E49",border:"1px solid #1A6B65",color:"#64748b",borderRadius:3,cursor:"pointer",fontSize:11}}>{l}</button>))}</div>
+          <div style={{display:"flex",gap:3}}>{[["«",()=>setPg(0)],["‹",()=>setPg(p=>Math.max(0,p-1))],["›",()=>setPg(p=>Math.min(totP-1,p+1))],["»",()=>setPg(totP-1)]].map(([l,fn],i)=>(<button key={i} onClick={fn} style={{padding:"5px 12px",background:BR.teal,border:`1px solid ${BR.gold}`,color:BR.white,borderRadius:4,cursor:"pointer",fontSize:13,fontWeight:700}}>{l}</button>))}</div>
         </div>
       </div>
     </div>)}
