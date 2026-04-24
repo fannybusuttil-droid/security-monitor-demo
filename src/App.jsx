@@ -357,7 +357,8 @@ function TopRiskChart({filt,rkC}){
 // ── MAIN COMPONENT ─────────────────────────────────────────────
 export default function App(){
   const [data,setData]=useState(BASE);
-
+  const [sraReview,setSraReview]=useState({});
+const [sraApplied,setSraApplied]=useState({});
   // Load real data from pipeline JSON if available
   useEffect(()=>{
     fetch('/security_data.json')
