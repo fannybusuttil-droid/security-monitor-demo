@@ -948,7 +948,7 @@ export default function App(){
             const demo={
               "1.1.3":{natScore:14,reason:"Significant increase in FPV drone incidents across all 4 oblasts — frequency up 40% vs prior period.",oblScores:{"Sumy":16,"Chernihiv":14,"Kyiv City":12,"Kyiv Oblast":12}},
               "6.4.2":{natScore:13,reason:"Access denial incidents in Sumy border raions increased. New military zones established Feb-Mar 2026.",oblScores:{"Sumy":16,"Chernihiv":6,"Kyiv City":2,"Kyiv Oblast":4}},
-              "6.1.3":{natScore:13,reason:"Disinformation campaigns targeting ICRC intensified on Ukrainian social media (Telegram, Twitter/X).",oblScores:{"Sumy":16,"Chernihiv":12,"Kyiv City":12,"Kyiv Oblast":10}},
+              "6.1.3":{natScore:13,reason:"Disinformation campaigns targeting humanitarian actors intensified on Ukrainian social media (Telegram, Twitter/X).",oblScores:{"Sumy":16,"Chernihiv":12,"Kyiv City":12,"Kyiv Oblast":10}},
             };
             setSraReview(demo);
           }} style={{...S.btn(false,BR.gold),color:BR.gold,border:`1px solid ${BR.gold}`}}>⟳ Load Demo Suggestions</button>
