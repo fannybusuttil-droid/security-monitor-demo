@@ -363,15 +363,16 @@ export default function App(){
     fetch('/security_data.json')
       .then(r=>{ if(!r.ok) throw new Error('No pipeline data yet'); return r.json(); })
       .then(d=>{
+        console.log('JSON loaded:', d);
+        console.log('Incidents count:', d.incidents?.length);
         if(d.incidents && Array.isArray(d.incidents) && d.incidents.length>0){
-          // Merge pipeline incidents with demo data (pipeline takes priority, remove demo duplicates by id)
           const pipelineIds = new Set(d.incidents.map(i=>i.id));
           const demoOnly = BASE.filter(i=>!pipelineIds.has(i.id) && i.statut==='DEMO');
           setData([...d.incidents, ...demoOnly]);
-          console.log(`Loaded ${d.incidents.length} incidents from pipeline`);
+          console.log('Data set successfully');
         }
       })
-      .catch(()=>{ console.log('Using demo data'); });
+      .catch(err=>{ console.log('Fetch error:', err); });
   },[]);
   const [tab,setTab]=useState("overview");
   const fileRef=useRef(null);
