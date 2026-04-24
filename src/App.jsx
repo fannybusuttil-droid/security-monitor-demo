@@ -7,7 +7,7 @@ if(typeof document!=="undefined"&&!document.getElementById("bridgital-fonts")){
   l.href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap";
   document.head.appendChild(l);
 }
-import { useState, useMemo, useCallback, useRef, useEffect } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import { AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Brush } from "recharts";
 
@@ -356,24 +356,32 @@ function TopRiskChart({filt,rkC}){
 
 // ── MAIN COMPONENT ─────────────────────────────────────────────
 export default function App(){
-  console.log('BASE length:', BASE.length, 'VER length:', VER.length);
-const [data,setData]=useState(BASE);
+  const [data,setData]=useState(BASE);
+
   // Load real data from pipeline JSON if available
- useEffect(()=>{
+  useEffect(()=>{
     fetch('/security_data.json')
       .then(r=>{ if(!r.ok) throw new Error('No pipeline data yet'); return r.json(); })
       .then(d=>{
-        console.log('JSON loaded:', d);
-        console.log('Incidents count:', d.incidents?.length);
         if(d.incidents && Array.isArray(d.incidents) && d.incidents.length>0){
-          // Keep ALL verified incidents from VER + add pipeline incidents
           const pipelineIds = new Set(d.incidents.map(i=>i.id));
           const existing = BASE.filter(i=>!pipelineIds.has(i.id));
           setData([...existing, ...d.incidents]);
-          console.log('Data merged successfully');
+        }
+        if(d.sra_updates && Array.isArray(d.sra_updates) && d.sra_updates.length>0){
+          const reviewMap={};
+          d.sra_updates.forEach(u=>{
+            const current=SRA_DATA.find(r=>r.id===u.risk_id)?.score||0;
+            reviewMap[u.risk_id]={
+              natScore: u.suggested_score||current,
+              reason: u.justification||`Pipeline suggestion — trend: ${u.trend}`,
+              oblScores: u.suggested_oblast_scores||{}
+            };
+          });
+          setSraReview(reviewMap);
         }
       })
-      .catch(err=>{ console.log('Fetch error:', err); });
+      .catch(()=>{ console.log('Using existing data'); });
   },[]);
   const [tab,setTab]=useState("overview");
   const fileRef=useRef(null);
