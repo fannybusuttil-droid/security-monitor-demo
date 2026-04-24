@@ -485,7 +485,10 @@ export default function App(){
   const tblD=useMemo(()=>{
     let d=[...filt];
     if(srch.trim()){const s=srch.toLowerCase();d=d.filter(i=>(i.risk_id||"").toLowerCase().includes(s)||(i.oblast||"").toLowerCase().includes(s)||(i.hromada||"").toLowerCase().includes(s)||(i.cible||"").toLowerCase().includes(s)||(i.description||"").toLowerCase().includes(s));}
-    const fn={date_exacte:i=>i.annee*10000+i.mois*100,morts:i=>i.morts,blesses:i=>i.blesses,severite:i=>({CRITICAL:4,HIGH:3,MEDIUM:2,LOW:1}[i.severite])}[srtC]||(i=>i[srtC]||"");
+    const fn={date_exacte:i=>{
+  const parts=i.date_exacte.split('/');
+  if(parts.length===3) return parseInt(parts[2])*10000+parseInt(parts[1])*100+parseInt(parts[0]);
+  return i.annee*10000+i.mois*100;},morts:i=>i.morts,blesses:i=>i.blesses,severite:i=>({CRITICAL:4,HIGH:3,MEDIUM:2,LOW:1}[i.severite])}[srtC]||(i=>i[srtC]||"");
     d.sort((a,b)=>{const av=fn(a),bv=fn(b);return av<bv?(srtD==="asc"?-1:1):av>bv?(srtD==="asc"?1:-1):0;});
     return d;
   },[filt,srch,srtC,srtD]);
