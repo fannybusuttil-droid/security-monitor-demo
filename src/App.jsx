@@ -7,7 +7,7 @@ if(typeof document!=="undefined"&&!document.getElementById("bridgital-fonts")){
   l.href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap";
   document.head.appendChild(l);
 }
-import { useState, useMemo, useCallback, useRef, useEffect } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import { AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Brush } from "recharts";
 
@@ -356,29 +356,45 @@ function TopRiskChart({filt,rkC}){
 
 // ── MAIN COMPONENT ─────────────────────────────────────────────
 export default function App(){
+  const [data,setData]=useState(BASE);
+
+  // Load real data from pipeline JSON if available
   const [sraReview,setSraReview]=useState({});
   const [sraApplied,setSraApplied]=useState({});
-  const [data,setData]=useState(BASE);
-  // Load real data from pipeline JSON if available
+  const [natData,setNatData]=useState(null);
+
   useEffect(()=>{
-  fetch('/security_data.json')
-    .then(r=>{ if(!r.ok) throw new Error(); return r.json(); })
-    .then(d=>{
-      if(d.incidents?.length>0){
-        const ids=new Set(d.incidents.map(i=>i.id));
-        setData([...BASE.filter(i=>!ids.has(i.id)),...d.incidents]);
-      }
-      if(d.sra_updates?.length>0){
-        const m={};
-        d.sra_updates.forEach(u=>{m[u.risk_id]={natScore:u.suggested_score||0,reason:u.justification||'',oblScores:u.suggested_oblast_scores||{}};});
-        setSraReview(m);
-      }
-    })
-    .catch(()=>{});
-},[]);
+    fetch('/security_data.json')
+      .then(r=>{ if(!r.ok) throw new Error('No pipeline data yet'); return r.json(); })
+      .then(d=>{
+        if(d.incidents && Array.isArray(d.incidents) && d.incidents.length>0){
+          const pipelineIds = new Set(d.incidents.map(i=>i.id));
+          const existing = BASE.filter(i=>!pipelineIds.has(i.id));
+          setData([...existing, ...d.incidents]);
+        }
+        if(d.sra_updates && Array.isArray(d.sra_updates) && d.sra_updates.length>0){
+          const reviewMap={};
+          d.sra_updates.forEach(u=>{
+            reviewMap[u.risk_id]={
+              natScore: u.suggested_score||0,
+              reason: u.justification||`Pipeline suggestion — trend: ${u.trend}`,
+              oblScores: u.suggested_oblast_scores||{}
+            };
+          });
+          setSraReview(reviewMap);
+        }
+      })
+      .catch(()=>{ console.log('Using existing data'); });
+
+    // Load national summary
+    fetch('/national_summary.json')
+      .then(r=>{ if(!r.ok) throw new Error(); return r.json(); })
+      .then(d=>{ if(d.ukraine_totals) setNatData(d); })
+      .catch(()=>{});
+  },[]);
   const [tab,setTab]=useState("overview");
   const fileRef=useRef(null);
-  const [ps,setPs]=useState({y:2022,m:2});
+  const [ps,setPs]=useState({y:2025,m:12});
   const [pe,setPe]=useState({y:2026,m:3});
   const [oblF,setOblF]=useState([...OBLS]);
   const [sevF,setSevF]=useState(["CRITICAL","HIGH","MEDIUM","LOW"]);
@@ -533,17 +549,21 @@ export default function App(){
 
     {/* NATIONAL KPI BANNER */}
     <div style={{background:"#0d1e1d",borderBottom:"1px solid #1e293b",padding:"5px 22px",display:"flex",gap:16,alignItems:"center",flexWrap:"wrap"}}>
-      <div style={{color:BR.gold,fontSize:9,letterSpacing:"0.1em",fontWeight:700,flexShrink:0}}>🇺🇦 NATIONAL EST.</div>
+      <div style={{color:BR.gold,fontSize:9,letterSpacing:"0.1em",fontWeight:700,flexShrink:0}}>🇺🇦 NATIONAL {natData?"REAL DATA":"EST."}</div>
       <div style={{display:"flex",gap:14,alignItems:"center",flexWrap:"wrap"}}>
-        <span style={{color:"#E8F4F3",fontSize:10}}>Total incidents: <span style={{color:BR.white,fontWeight:700}}>{natKpi.total.toLocaleString()}</span></span>
-        <span style={{color:"#E8F4F3",fontSize:10}}>Killed: <span style={{color:"#f87171",fontWeight:700}}>{natKpi.killed.toLocaleString()}</span></span>
-        <span style={{color:"#E8F4F3",fontSize:10}}>Wounded: <span style={{color:"#fb923c",fontWeight:700}}>{natKpi.wounded.toLocaleString()}</span></span>
-        <span style={{color:"#E8F4F3",fontSize:10}}>4-zone share: <span style={{color:BR.gold,fontWeight:700}}>{natKpi.top4share}%</span></span>
-        <div style={{display:"flex",gap:6,alignItems:"center"}}>
-          {natKpi.topObl.map(([o,v])=>(<span key={o} style={{fontSize:9,color:"#E8F4F3"}}>{o}: <span style={{color:BR.white,fontWeight:600}}>{v.toLocaleString()}</span></span>))}
-        </div>
+        <span style={{color:"#E8F4F3",fontSize:10}}>Total incidents: <span style={{color:BR.white,fontWeight:700}}>{natData?natData.ukraine_totals.total_incidents.toLocaleString():natKpi.total.toLocaleString()}</span></span>
+        <span style={{color:"#E8F4F3",fontSize:10}}>Killed: <span style={{color:"#f87171",fontWeight:700}}>{natData?natData.ukraine_totals.killed.toLocaleString():natKpi.killed.toLocaleString()}</span></span>
+        <span style={{color:"#E8F4F3",fontSize:10}}>Wounded: <span style={{color:"#fb923c",fontWeight:700}}>{natData?natData.ukraine_totals.wounded.toLocaleString():natKpi.wounded.toLocaleString()}</span></span>
+        {natData?(<div style={{display:"flex",gap:6,alignItems:"center"}}>
+          {Object.entries(natData.by_oblast).filter(([,v])=>v.incidents>0).sort((a,b)=>b[1].incidents-a[1].incidents).slice(0,5).map(([o,v])=>(<span key={o} style={{fontSize:9,color:"#E8F4F3"}}>{o}: <span style={{color:BR.white,fontWeight:600}}>{v.incidents.toLocaleString()}</span></span>))}
+        </div>):(<>
+          <span style={{color:"#E8F4F3",fontSize:10}}>4-zone share: <span style={{color:BR.gold,fontWeight:700}}>{natKpi.top4share}%</span></span>
+          <div style={{display:"flex",gap:6,alignItems:"center"}}>
+            {natKpi.topObl.map(([o,v])=>(<span key={o} style={{fontSize:9,color:"#E8F4F3"}}>{o}: <span style={{color:BR.white,fontWeight:600}}>{v.toLocaleString()}</span></span>))}
+          </div>
+        </>)}
       </div>
-      <div style={{marginLeft:"auto",color:`${BR.white}55`,fontSize:9}}>ACLED-based extrapolation · 4 zones ≈ 15% of Ukraine events · Demo data</div>
+      <div style={{marginLeft:"auto",color:`${BR.white}55`,fontSize:9}}>{natData?`Source: ${natData.source_note} · As of ${natData.data_as_of}`:"ACLED-based extrapolation · 4 zones ≈ 15% of Ukraine events · Demo data"}</div>
     </div>
 
     <div style={S.tabs}>{TDEF.map(t=>(<button key={t.id} onClick={()=>setTab(t.id)} style={S.tab(tab===t.id,t.warn&&tab!==t.id)}>{t.ico} {t.lbl}</button>))}</div>
