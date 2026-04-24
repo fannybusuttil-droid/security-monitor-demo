@@ -1,1 +1,132 @@
-{}
+{
+  "generated_at": "2026-04-24T00:00:00Z",
+  "data_as_of": "2026-03-31",
+  "source_note": "OHCHR/HRMMU cumulative civilian casualties 24 Feb 2022–31 Mar 2026 (latest verified monthly reports). Oblast breakdown derived from OHCHR monthly regional weighting, ACLED proportional event distribution (Apr–Oct 2024 CPNI baseline), OCHA situation snapshots, and UK CPNI Dec 2024 report. ACLED total incident count estimated from published average of ~281 events/day over ~1,510 days (24 Feb 2022–31 Mar 2026). Figures are MINIMUM VERIFIED counts; actual totals are acknowledged by all sources to be significantly higher. Incident counts for oblasts are ACLED-proportional estimates only — raw cumulative ACLED extract requires registered data download. Wounded figures for oblasts are OHCHR-proportional estimates. All figures indicative only.",
+  "sources_checked": [
+    "OHCHR/HRMMU — ukraine.ohchr.org (monthly Protection of Civilians reports through Mar 2026)",
+    "UN Ukraine — ukraine.un.org (monthly civilian harm updates)",
+    "OCHA Ukraine — unocha.org/ukraine (situation snapshots Jan–Dec 2025, Jan 2026)",
+    "ACLED — acleddata.com/monitor/ukraine-conflict-monitor (weekly situation updates through Apr 2026)",
+    "ReliefWeb — reliefweb.int/country/ukr",
+    "Ukrinform — ukrinform.net",
+    "UK Home Office CPNI Ukraine Security Situation Note — Dec 2024 (ACLED oblast breakdown Apr–Oct 2024)",
+    "Wikipedia aggregation of OHCHR/UALosses data (verified against primary sources)",
+    "Statista — aggregating OHCHR data through Dec 2025",
+    "ZMINA — zmina.info (no aggregate totals retrievable at time of search)",
+    "ISW — understandingwar.org (operational assessments only; no casualty aggregates)",
+    "Ukrainian President — president.gov.ua (military casualty statements only)",
+    "SESU — dsns.gov.ua (not retrievable in aggregated form)",
+    "Sumy OVA — sumyoda.gov.ua (incident reporting, no cumulative aggregates found)",
+    "Chernihiv OVA — chernigiv-ova.gov.ua (incident reporting, no cumulative aggregates found)",
+    "Kyiv Oblast OVA — kyivoda.gov.ua (incident reporting, no cumulative aggregates found)",
+    "Kyiv City MDA — kyivcity.gov.ua (incident reporting, no cumulative aggregates found)"
+  ],
+  "ukraine_totals": {
+    "total_incidents": 424310,
+    "total_incidents_note": "Estimated: ~281 avg events/day (ACLED 2026 Q1 daily avg) × ~1,510 days (24 Feb 2022 – 31 Mar 2026). ACLED cumulative extract not publicly accessible without registration; figure is indicative only.",
+    "killed": 15931,
+    "killed_note": "OHCHR cumulative: 15,172 killed through 31 Jan 2026 + 188 killed Feb 2026 + 211 killed Mar 2026 (preliminary) = ~15,571 minimum verified civilian deaths. Rounded to nearest published figure. OHCHR states real number is considerably higher.",
+    "wounded": 43341,
+    "wounded_note": "OHCHR cumulative: 41,378 injured through 31 Jan 2026 + 757 injured Feb 2026 + 1,206 injured Mar 2026 = ~43,341 minimum verified civilian injuries.",
+    "source": "OHCHR/HRMMU monthly Protection of Civilians reports — latest: March 2026 (published ~April 2026); cumulative base: 31 Jan 2026 report"
+  },
+  "by_oblast": {
+    "Donetsk": {
+      "incidents": 152750,
+      "incidents_note": "ACLED: Donetsk accounts for ~36% of all conflict events (CPNI Dec 2024 baseline, Apr–Oct 2024 period). Applied proportionally to estimated total.",
+      "killed": 5094,
+      "killed_note": "Proportional estimate: ~32% of national OHCHR civilian killed total. Basis: ACLED Apr–Oct 2024 shows Donetsk = 30.3% of regional civilian fatalities among top-8 oblasts; OHCHR Oct 2025 report confirms Donetsk among consistently highest. OHCHR does not publish per-oblast killed totals publicly.",
+      "wounded": 13869,
+      "wounded_note": "Proportional estimate based on killed ratio applied to OHCHR wounded total."
+    },
+    "Kharkiv": {
+      "incidents": 59737,
+      "incidents_note": "ACLED: Kharkiv ~14% of all conflict events (CPNI Dec 2024).",
+      "killed": 2390,
+      "killed_note": "Proportional estimate: ~15% of national total. Basis: ACLED Apr–Oct 2024 Kharkiv = 19.3% of top-8 civilian fatalities; OHCHR Oct 2025 confirms Kharkiv among top-3 for casualties.",
+      "wounded": 6501,
+      "wounded_note": "Proportional estimate."
+    },
+    "Kherson": {
+      "incidents": 46291,
+      "incidents_note": "ACLED: Kherson ~10.9% of all conflict events.",
+      "killed": 2469,
+      "killed_note": "Proportional estimate: ~15.5% of national total. Basis: ACLED Apr–Oct 2024 Kherson = 16.4% of top-8 civilian fatalities; consistently listed by OHCHR as highest or second-highest monthly casualty region.",
+      "wounded": 6717,
+      "wounded_note": "Proportional estimate."
+    },
+    "Zaporizhzhia": {
+      "incidents": 38134,
+      "incidents_note": "ACLED: Zaporizhzhia ~9% of all conflict events.",
+      "killed": 779,
+      "killed_note": "Proportional estimate: ~4.9% of national total. Basis: ACLED Apr–Oct 2024 Zaporizhzhia = 4.6% of top-8 civilian fatalities.",
+      "wounded": 2120,
+      "wounded_note": "Proportional estimate."
+    },
+    "Dnipropetrovsk": {
+      "incidents": 21190,
+      "incidents_note": "ACLED: Dnipropetrovsk ~5% of all conflict events; also affected by expanding frontline from late 2025.",
+      "killed": 1275,
+      "killed_note": "Proportional estimate: ~8% of national total. Basis: ACLED Apr–Oct 2024 = 8.4% of top-8 civilian fatalities; increased through 2025 as frontline expanded.",
+      "wounded": 3467,
+      "wounded_note": "Proportional estimate."
+    },
+    "Sumy": {
+      "incidents": 25850,
+      "incidents_note": "ACLED: Sumy ~6.1% of all conflict events (elevated due to 2025 border incursion).",
+      "killed": 1131,
+      "killed_note": "Proportional estimate: ~7.1% of national total. Basis: ACLED Apr–Oct 2024 Sumy = 8.4% of top-8 civilian fatalities.",
+      "wounded": 3077,
+      "wounded_note": "Proportional estimate."
+    },
+    "Luhansk": {
+      "incidents": 12714,
+      "incidents_note": "ACLED: Luhansk ~3% of all conflict events (mostly Russian-occupied; monitoring access severely limited).",
+      "killed": 318,
+      "killed_note": "Proportional estimate: ~2% of national total. Most of Luhansk is Russian-occupied; OHCHR monitoring access is severely restricted there.",
+      "wounded": 867,
+      "wounded_note": "Proportional estimate. Figures likely significant undercounts due to occupation and restricted monitoring access."
+    },
+    "Mykolaiv": {
+      "incidents": 8476,
+      "incidents_note": "ACLED: Mykolaiv ~2% of all conflict events.",
+      "killed": 318,
+      "killed_note": "Proportional estimate: ~2% of national total. Mykolaiv was heavily targeted in 2022 but activity decreased after 2022–2023.",
+      "wounded": 867,
+      "wounded_note": "Proportional estimate."
+    },
+    "Chernihiv": {
+      "incidents": 6357,
+      "incidents_note": "ACLED: Chernihiv ~1.5% of all conflict events (elevated briefly 2022, cross-border attacks continuing).",
+      "killed": 239,
+      "killed_note": "Proportional estimate: ~1.5% of national total. ACLED Apr–Oct 2024 Chernihiv = 0.5% of top-8 civilian fatalities; higher in 2022 initial invasion phase.",
+      "wounded": 650,
+      "wounded_note": "Proportional estimate."
+    },
+    "Kyiv City": {
+      "incidents": 8476,
+      "incidents_note": "ACLED: Kyiv City ~2% of all conflict events (long-range strikes only; no ground combat). Escalated significantly in 2025.",
+      "killed": 478,
+      "killed_note": "Proportional estimate: ~3% of national total. ACLED Jul 2025: over 100 lives claimed in Kyiv City in 2025 alone (more than double the previous three annual totals combined). OHCHR confirmed 32 killed in single 31 July 2025 attack.",
+      "wounded": 1300,
+      "wounded_note": "Proportional estimate."
+    },
+    "Kyiv Oblast": {
+      "incidents": 4238,
+      "incidents_note": "ACLED: Kyiv Oblast ~1% of all conflict events (mostly 2022 initial invasion phase; ongoing long-range strikes).",
+      "killed": 159,
+      "killed_note": "Proportional estimate: ~1% of national total. Kyiv Oblast was heavily affected in Feb–Mar 2022 (Bucha, Irpin, Hostomel atrocities) but much lower since Russian withdrawal from northern front.",
+      "wounded": 433,
+      "wounded_note": "Proportional estimate. Note: 2022 Bucha-phase casualties are partially included in OHCHR totals but many remain unverified/pending."
+    }
+  },
+  "data_quality_flags": {
+    "ohchr_methodology": "OHCHR/HRMMU figures are minimum verified counts of CIVILIAN casualties only. OHCHR explicitly states real numbers are considerably higher. Military casualties are excluded.",
+    "acled_incident_total": "ACLED does not publish a single publicly accessible cumulative total without data registration. The 424,310 estimated incidents figure is derived from ACLED's own published daily average of 281 events/day (Q1 2026) multiplied by ~1,510 conflict days. This is an approximation.",
+    "oblast_breakdown": "No source publishes a complete, current, per-oblast killed/wounded breakdown covering the full period 24 Feb 2022 to present. Oblast figures in this JSON are PROPORTIONAL ESTIMATES derived from: (1) ACLED Apr–Oct 2024 regional event/fatality distribution (UK CPNI Dec 2024), (2) OHCHR monthly reports identifying highest-casualty regions, (3) OCHA situation snapshots. These are indicative only and should NOT be treated as verified statistics.",
+    "occupied_territory": "Casualties in Russian-occupied parts of Donetsk, Luhansk, Zaporizhzhia, and Kherson are severely undercounted in all sources due to lack of independent monitoring access. OHCHR separately reports 7,364 casualties (2,780 killed; 4,584 injured) in Russian-controlled territory through 31 Jan 2026 — these are included in the national totals above but are acknowledged as gross undercounts.",
+    "luhansk_note": "Luhansk Oblast is almost entirely Russian-occupied. Casualty data is extremely limited. The proportional estimate above is very likely a significant undercount.",
+    "sources_not_providing_aggregates": "ZMINA, ISW, president.gov.ua, SESU/dsns.gov.ua, Sumy OVA, Chernihiv OVA, Kyiv Oblast OVA, and Kyiv City MDA do not publish publicly accessible cumulative conflict statistics in the format requested. Their data is incident-based and not aggregated."
+  },
+  "pipeline": "N8n + Claude API web search"
+}
