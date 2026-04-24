@@ -357,9 +357,11 @@ function TopRiskChart({filt,rkC}){
 // ── MAIN COMPONENT ─────────────────────────────────────────────
 export default function App(){
   const [data,setData]=useState(BASE);
-  const [sraReview,setSraReview]=useState({});
-const [sraApplied,setSraApplied]=useState({});
+
   // Load real data from pipeline JSON if available
+  const [sraReview,setSraReview]=useState({});
+  const [sraApplied,setSraApplied]=useState({});
+
   useEffect(()=>{
     fetch('/security_data.json')
       .then(r=>{ if(!r.ok) throw new Error('No pipeline data yet'); return r.json(); })
@@ -372,9 +374,8 @@ const [sraApplied,setSraApplied]=useState({});
         if(d.sra_updates && Array.isArray(d.sra_updates) && d.sra_updates.length>0){
           const reviewMap={};
           d.sra_updates.forEach(u=>{
-            const current=SRA_DATA.find(r=>r.id===u.risk_id)?.score||0;
             reviewMap[u.risk_id]={
-              natScore: u.suggested_score||current,
+              natScore: u.suggested_score||0,
               reason: u.justification||`Pipeline suggestion — trend: ${u.trend}`,
               oblScores: u.suggested_oblast_scores||{}
             };
@@ -403,8 +404,6 @@ const [sraApplied,setSraApplied]=useState({});
   const [rmF,setRmF]=useState("ALL");
   const [rmSrt,setRmSrt]=useState("comp");
   const [rmGap,setRmGap]=useState(0);
-  const [sraReview,setSraReview]=useState({}); // {risk_id: {natScore, oblScores:{oblast:score}}}
-  const [sraApplied,setSraApplied]=useState({}); // applied overrides
   const [rmSec,setRmSec]=useState("ALL");
   const [method,setMethod]=useState("c70");
   const [focObl,setFocObl]=useState(null);
