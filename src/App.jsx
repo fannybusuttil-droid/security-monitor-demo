@@ -359,17 +359,18 @@ export default function App(){
   const [data,setData]=useState(BASE);
 
   // Load real data from pipeline JSON if available
-  useEffect(()=>{
+ useEffect(()=>{
     fetch('/security_data.json')
       .then(r=>{ if(!r.ok) throw new Error('No pipeline data yet'); return r.json(); })
       .then(d=>{
         console.log('JSON loaded:', d);
         console.log('Incidents count:', d.incidents?.length);
         if(d.incidents && Array.isArray(d.incidents) && d.incidents.length>0){
+          // Keep ALL verified incidents from VER + add pipeline incidents
           const pipelineIds = new Set(d.incidents.map(i=>i.id));
-          const demoOnly = BASE.filter(i=>!pipelineIds.has(i.id) && i.statut==='DEMO');
-          setData([...d.incidents, ...demoOnly]);
-          console.log('Data set successfully');
+          const existing = BASE.filter(i=>!pipelineIds.has(i.id));
+          setData([...existing, ...d.incidents]);
+          console.log('Data merged successfully');
         }
       })
       .catch(err=>{ console.log('Fetch error:', err); });
