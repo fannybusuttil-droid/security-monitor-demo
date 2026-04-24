@@ -357,6 +357,22 @@ function TopRiskChart({filt,rkC}){
 // ── MAIN COMPONENT ─────────────────────────────────────────────
 export default function App(){
   const [data,setData]=useState(BASE);
+
+  // Load real data from pipeline JSON if available
+  useEffect(()=>{
+    fetch('/security_data.json')
+      .then(r=>{ if(!r.ok) throw new Error('No pipeline data yet'); return r.json(); })
+      .then(d=>{
+        if(d.incidents && Array.isArray(d.incidents) && d.incidents.length>0){
+          // Merge pipeline incidents with demo data (pipeline takes priority, remove demo duplicates by id)
+          const pipelineIds = new Set(d.incidents.map(i=>i.id));
+          const demoOnly = BASE.filter(i=>!pipelineIds.has(i.id) && i.statut==='DEMO');
+          setData([...d.incidents, ...demoOnly]);
+          console.log(`Loaded ${d.incidents.length} incidents from pipeline`);
+        }
+      })
+      .catch(()=>{ console.log('Using demo data'); });
+  },[]);
   const [tab,setTab]=useState("overview");
   const fileRef=useRef(null);
   const [ps,setPs]=useState({y:2022,m:2});
