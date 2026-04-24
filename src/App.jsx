@@ -356,35 +356,26 @@ function TopRiskChart({filt,rkC}){
 
 // ── MAIN COMPONENT ─────────────────────────────────────────────
 export default function App(){
-  const [data,setData]=useState(BASE);
-
-  // Load real data from pipeline JSON if available
   const [sraReview,setSraReview]=useState({});
   const [sraApplied,setSraApplied]=useState({});
-
+  const [data,setData]=useState(BASE);
+  // Load real data from pipeline JSON if available
   useEffect(()=>{
-    fetch('/security_data.json')
-      .then(r=>{ if(!r.ok) throw new Error('No pipeline data yet'); return r.json(); })
-      .then(d=>{
-        if(d.incidents && Array.isArray(d.incidents) && d.incidents.length>0){
-          const pipelineIds = new Set(d.incidents.map(i=>i.id));
-          const existing = BASE.filter(i=>!pipelineIds.has(i.id));
-          setData([...existing, ...d.incidents]);
-        }
-        if(d.sra_updates && Array.isArray(d.sra_updates) && d.sra_updates.length>0){
-          const reviewMap={};
-          d.sra_updates.forEach(u=>{
-            reviewMap[u.risk_id]={
-              natScore: u.suggested_score||0,
-              reason: u.justification||`Pipeline suggestion — trend: ${u.trend}`,
-              oblScores: u.suggested_oblast_scores||{}
-            };
-          });
-          setSraReview(reviewMap);
-        }
-      })
-      .catch(()=>{ console.log('Using existing data'); });
-  },[]);
+  fetch('/security_data.json')
+    .then(r=>{ if(!r.ok) throw new Error(); return r.json(); })
+    .then(d=>{
+      if(d.incidents?.length>0){
+        const ids=new Set(d.incidents.map(i=>i.id));
+        setData([...BASE.filter(i=>!ids.has(i.id)),...d.incidents]);
+      }
+      if(d.sra_updates?.length>0){
+        const m={};
+        d.sra_updates.forEach(u=>{m[u.risk_id]={natScore:u.suggested_score||0,reason:u.justification||'',oblScores:u.suggested_oblast_scores||{}};});
+        setSraReview(m);
+      }
+    })
+    .catch(()=>{});
+},[]);
   const [tab,setTab]=useState("overview");
   const fileRef=useRef(null);
   const [ps,setPs]=useState({y:2022,m:2});
